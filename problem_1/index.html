@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Number Management Service</title>
+</head>
+<body>
+    <h1>Number Management Service</h1>
+    
+    <label for="url">Enter URL(s) (separated by comma):</label>
+    <input type="text" id="url" size="50" required>
+    <br>
+    <button id="getNumbers">Get Numbers</button>
+    
+    <h2>Numbers:</h2>
+    <pre id="numbers"></pre>
+    
+    <script>
+        document.getElementById('getNumbers').addEventListener('click', async function() {
+            const urlInput = document.getElementById('url');
+            const numbersPre = document.getElementById('numbers');
+            
+            const urls = urlInput.value.split(',').map(url => url.trim());
+            
+            try {
+                const fetchPromises = urls.map(url => fetch(url));
+                
+                const responses = await Promise.all(fetchPromises);
+                const dataPromises = responses.map(response => response.text());
+                
+                const dataArray = await Promise.all(dataPromises);
+                
+                const allNumbers = dataArray.flatMap(data => {
+                    const numbers = data.match(/\d+/g);
+                    return numbers ? numbers.map(Number) : [];
+                });
+                
+                const sortedNumbers = allNumbers.sort((a, b) => a - b);
+                
+                const output = `"numbers": [${sortedNumbers.join(', ')}]`;
+                numbersPre.textContent = output;
+            } catch (error) {
+                console.error('Error:', error);
+                numbersPre.textContent = 'Error fetching and sorting numbers.';
+            }
+        });
+    </script>
+</body>
+</html>

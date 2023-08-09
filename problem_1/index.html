@@ -34,7 +34,7 @@
                     return numbers ? numbers.map(Number) : [];
                 });
                 
-                const sortedNumbers = allNumbers.sort((a, b) => a - b);
+                const sortedNumbers = [...new Set(allNumbers)].sort((a, b) => a - b);
                 
                 const output = `"numbers": [${sortedNumbers.join(', ')}]`;
                 numbersPre.textContent = output;
